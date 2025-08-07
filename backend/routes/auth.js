@@ -9,7 +9,10 @@ async function authRoutes(fastify, options) {
   fastify.post('/login', authController.login);
 
   
-  fastify.get('/me', { preHandler: verifyToken }, userController.getMe);
+  fastify.get('/me', async (req, res) => {
+  return { ok: true }
+})
+
 
  
   fastify.post('/agendamentos', { preHandler: verifyToken }, agendamentoController.criarAgendamento);

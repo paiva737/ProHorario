@@ -19,6 +19,7 @@ exports.register = async (request, reply) => {
 
     reply.status(201).send({ mensagem: 'Usuário criado com sucesso' });
   } catch (err) {
+     console.log(err);
     reply.status(500).send({ erro: 'Erro ao criar usuário' });
   }
 };
