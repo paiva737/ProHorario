@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 async function authRoutes(fastify, options) {
+  
   fastify.post('/register', async (request, reply) => {
     const { nome, email, senha, linkPersonalizado } = request.body;
 
@@ -33,6 +35,65 @@ async function authRoutes(fastify, options) {
       reply.status(500).send({ erro: 'Erro ao criar usuário' });
     }
   });
+
+  // Rota de login
+  fastify.post('/login', async (request, reply) => {
+    const { email, senha } = request.body;
+
+    try {
+      const usuario = await User.findOne({ email });
+
+      if (!usuario) {
+        return reply.status(401).send({ erro: 'E-mail não encontrado' });
+      }
+
+      const senhaValida = await bcrypt.compare(senha, usuario.senha);
+
+      if (!senhaValida) {
+        return reply.status(401).send({ erro: 'Senha incorreta' });
+      }
+
+      const token = jwt.sign(
+        { id: usuario._id, email: usuario.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      reply.send({
+        mensagem: 'Login realizado com sucesso',
+        token,
+        usuario: {
+          id: usuario._id,
+          nome: usuario.nome,
+          email: usuario.email,
+          linkPersonalizado: usuario.linkPersonalizado
+        }
+      });
+    } catch (err) {
+      reply.status(500).send({ erro: 'Erro ao fazer login' });
+    }
+  });
+  const verifyToken = require('../middlewares/verifyToken');
+  
+  fastify.get('/me', { preHandler: verifyToken }, async (request, reply) => {
+    try {
+      const userId = request.usuario.id;
+  
+      const usuario = await User.findById(userId).select('-senha'); // sem a senha
+  
+      if (!usuario) {
+        return reply.status(404).send({ erro: 'Usuário não encontrado' });
+      }
+  
+      reply.send({ usuario });
+    } catch (err) {
+      reply.status(500).send({ erro: 'Erro ao buscar usuário' });
+    }
+  });
 }
+
+
+
+
 
 module.exports = authRoutes;
