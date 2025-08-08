@@ -14,11 +14,20 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  cpf: {
+    type: String,
+    required: true,
+    unique: true
+  },
   linkPersonalizado: {
     type: String,
     required: true,
     unique: true
   },
+  area: {
+    type: String,
+    required: true
+  }
 }, {
   timestamps: true
 });

@@ -13,14 +13,8 @@ async function authRoutes(fastify, options) {
   return { ok: true }
 })
 
-
- 
-
-  fastify.delete('/agendamentos/:id', { preHandler: verifyToken }, agendamentoController.cancelarAgendamento);
-
- 
- 
   
+
 }
 
 module.exports = authRoutes;

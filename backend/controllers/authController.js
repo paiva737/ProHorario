@@ -3,23 +3,33 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 exports.register = async (request, reply) => {
-  const { nome, email, senha, linkPersonalizado } = request.body;
+  const { nome, email, senha, cpf, linkPersonalizado, area } = request.body;
 
   try {
     const existeEmail = await User.findOne({ email });
     const existeLink = await User.findOne({ linkPersonalizado });
+    const existeCpf = await User.findOne({ cpf });
 
     if (existeEmail) return reply.status(400).send({ erro: 'E-mail já cadastrado' });
     if (existeLink) return reply.status(400).send({ erro: 'Link personalizado já em uso' });
+    if (existeCpf) return reply.status(400).send({ erro: 'CPF já cadastrado' });
 
     const senhaHash = await bcrypt.hash(senha, 10);
 
-    const novoUsuario = new User({ nome, email, senha: senhaHash, linkPersonalizado });
+    const novoUsuario = new User({
+      nome,
+      email,
+      senha: senhaHash,
+      cpf,
+      linkPersonalizado,
+      area
+    });
+
     await novoUsuario.save();
 
     reply.status(201).send({ mensagem: 'Usuário criado com sucesso' });
   } catch (err) {
-     console.log(err);
+    console.log(err);
     reply.status(500).send({ erro: 'Erro ao criar usuário' });
   }
 };
@@ -47,7 +57,9 @@ exports.login = async (request, reply) => {
         id: usuario._id,
         nome: usuario.nome,
         email: usuario.email,
-        linkPersonalizado: usuario.linkPersonalizado
+        linkPersonalizado: usuario.linkPersonalizado,
+        cpf: usuario.cpf,
+        area: usuario.area
       }
     });
   } catch (err) {

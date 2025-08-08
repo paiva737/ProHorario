@@ -3,11 +3,11 @@ const fastify = require('fastify')({ logger: true });
 const mongoose = require('mongoose');
 const fastifyCors = require('@fastify/cors'); 
 
-// ✅ Registra as rotas públicas de agendamento
-fastify.register(require('./routes/agendamentos'));
 
-// ✅ Registra as rotas de autenticação
+fastify.register(require('./routes/agendamentos'));
 fastify.register(require('./routes/auth'));
+fastify.register(require('./routes/agendamentosPrivado'));
+
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
   fastify.log.info('📦 Conectado ao MongoDB');
@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 });
 
 fastify.register(fastifyCors, {
-  origin: 'http://localhost:5174',
+  origin: ['http://localhost:5174','http://localhost:5173'],
   credentials: true
 });
 

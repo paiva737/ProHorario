@@ -45,7 +45,7 @@ const handleLogin = async () => {
     userStore.setUserData(token, usuario)
     erro.value = ''
 
-    // redirecionar (vamos criar essa rota em seguida)
+
     router.push('/dashboard')
   } catch (err) {
     erro.value = 'E-mail ou senha inválidos'
