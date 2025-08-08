@@ -1,7 +1,13 @@
 require('dotenv').config();
 const fastify = require('fastify')({ logger: true });
 const mongoose = require('mongoose');
-const fastifyCors = require('@fastify/cors'); // Corrigido: usando require ao invés de import
+const fastifyCors = require('@fastify/cors'); 
+
+// ✅ Registra as rotas públicas de agendamento
+fastify.register(require('./routes/agendamentos'));
+
+// ✅ Registra as rotas de autenticação
+fastify.register(require('./routes/auth'));
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
   fastify.log.info('📦 Conectado ao MongoDB');
@@ -17,8 +23,6 @@ fastify.register(fastifyCors, {
 fastify.get('/', async (request, reply) => {
   return { mensagem: 'Servidor ProHorario rodando!' };
 });
-
-fastify.register(require('./routes/auth'));
 
 const start = async () => {
   try {
