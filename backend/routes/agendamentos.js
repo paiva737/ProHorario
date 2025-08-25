@@ -1,67 +1,29 @@
-const User = require('../models/User');
-const Agendamento = require('../models/Agendamento');
+const controller = require('../controllers/agendamentoController')
+const jwt = require('jsonwebtoken')
 
 module.exports = async function (fastify, opts) {
-  
-  fastify.get('/:linkPersonalizado/disponiveis', async (request, reply) => {
-    const { linkPersonalizado } = request.params;
-
-    const profissional = await User.findOne({ linkPersonalizado });
-    if (!profissional) {
-      return reply.status(404).send({ erro: 'Profissional não encontrado' });
+  async function authInline(request, reply) {
+    const auth = request.headers.authorization || ''
+    if (!auth.startsWith('Bearer ')) {
+      return reply.code(401).send({ erro: 'Authorization ausente/ inválido' })
     }
-
-    const agendamentos = await Agendamento.find({ profissional: profissional._id });
-
-    return { profissional, agendamentos };
-  });
-
-  fastify.get('/:linkPersonalizado/disponiveis-livres', async (request, reply) => {
-    const { linkPersonalizado } = request.params;
-
-    const profissional = await User.findOne({ linkPersonalizado });
-    if (!profissional) {
-      return reply.status(404).send({ erro: 'Profissional não encontrado' });
+    try {
+      const token = auth.slice(7).trim()
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      request.user = decoded
+      request.usuario = decoded
+    } catch (err) {
+      return reply.code(401).send({ erro: 'JWT inválido' })
     }
+  }
 
-    const agendamentos = await Agendamento.find({
-      profissional: profissional._id,
-      data: { $gte: new Date() }
-    });
+  fastify.post('/agendamentos', { preHandler: authInline }, controller.criarAgendamento)
+  fastify.delete('/agendamentos/:id', { preHandler: authInline }, controller.cancelarAgendamento)
 
-    const horariosOcupados = agendamentos.map(a => a.data.toISOString());
-
-    return { profissional, horariosOcupados };
-  });
-
-  fastify.post('/:linkPersonalizado/agendar', async (request, reply) => {
-    const { linkPersonalizado } = request.params;
-    const { data, nomeCliente, emailCliente } = request.body;
-
-    const profissional = await User.findOne({ linkPersonalizado });
-    if (!profissional) {
-      return reply.status(404).send({ erro: 'Profissional não encontrado' });
-    }
-
-    const jaExiste = await Agendamento.findOne({
-      profissional: profissional._id,
-      data
-    });
-
-    if (jaExiste) {
-      return reply.status(400).send({ erro: 'Horário já agendado' });
-    }
-
-    const agendamento = new Agendamento({
-      data,
-      nomeCliente,
-      emailCliente,
-      confirmado: true,
-      profissional: profissional._id
-    });
-
-    await agendamento.save();
-
-    return { mensagem: 'Agendamento criado com sucesso', agendamento };
-  });
-};
+  fastify.get('/public/:linkPersonalizado/agendamentos', controller.listarAgendamentos)
+  fastify.post('/public/:linkPersonalizado/agendamentos', controller.agendarPublico)
+  fastify.get('/public/:linkPersonalizado/horarios-livres', controller.horariosLivres)
+  fastify.get('/priv/agendamentos/mine', { preHandler: authInline }, controller.meusAgendamentos)
+  fastify.post('/priv/agendamentos/bulk', { preHandler: authInline }, controller.criarAgendamentosEmLote)
+  fastify.post('/priv/agendamentos/generate', { preHandler: authInline }, controller.gerarSlotsSequenciais)
+}

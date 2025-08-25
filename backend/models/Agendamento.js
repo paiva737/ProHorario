@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const AgendamentoSchema = new mongoose.Schema({
-  data: {
-    type: Date,
+  profissional: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true
   },
   nomeCliente: {
@@ -13,17 +14,29 @@ const AgendamentoSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  confirmado: {
-    type: Boolean,
-    default: true
+  notas: {
+    type: String,
+    default: ''
   },
-  profissional: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+  start: {
+    type: Date,
+    required: true,
+    index: true
+  },
+  end: {
+    type: Date,
     required: true
+  },
+  status: {
+    type: String,
+    enum: ['scheduled', 'cancelled'],
+    default: 'scheduled',
+    index: true
   }
 }, {
   timestamps: true
-});
+})
 
-module.exports = mongoose.model('Agendamento', AgendamentoSchema);
+AgendamentoSchema.index({ profissional: 1, start: 1 }, { unique: true })
+
+module.exports = mongoose.model('Agendamento', AgendamentoSchema)
