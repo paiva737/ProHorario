@@ -5,6 +5,7 @@ import Dashboard from '../pages/Dashboard.vue'
 import Register from '../pages/Register.vue'
 import AgendamentoPublico from '../pages/AgendamentoPublico.vue' 
 
+
 const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/login', name: 'Login', component: () => import('../pages/Login.vue') },

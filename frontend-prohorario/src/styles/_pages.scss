@@ -1,0 +1,9 @@
+.page {
+  padding-block: 24px;
+}
+
+.page--auth {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+}

@@ -1,0 +1,81 @@
+@import './variables';
+@import './mixins';
+
+.agendamento {
+  @include container;
+  padding: 2rem 0;
+
+  h1, h2 {
+    color: $primary-color;
+    margin-bottom: 1rem;
+  }
+
+  .profissional,
+  .data-selecao {
+    margin-bottom: 1rem;
+
+    label {
+      font-weight: bold;
+      margin-right: .5rem;
+    }
+
+    select, input[type="date"] {
+      padding: .5rem .75rem;
+      border-radius: $border-radius;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      color: $text-color;
+      width: auto;
+      min-width: 220px;
+    }
+  }
+
+  .horarios {
+    margin-top: 2rem;
+
+    h2 {
+      margin-bottom: .5rem;
+    }
+
+    .meta {
+      opacity: .7;
+      font-size: .9rem;
+      margin-bottom: .75rem;
+    }
+
+    ul {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+
+      li {
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.1);
+        padding: .75rem;
+        border-radius: $border-radius;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: .75rem;
+
+        .slot {
+          white-space: nowrap;
+        }
+
+        button {
+          padding: .4rem .75rem;
+          border-radius: $border-radius;
+          border: 0;
+          background: $primary-color;
+          color: #fff;
+          cursor: pointer;
+          font-size: .85rem;
+        }
+
+        button:hover {
+          background: lighten($primary-color, 5%);
+        }
+      }
+    }
+  }
+}

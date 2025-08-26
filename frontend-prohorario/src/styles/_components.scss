@@ -1,0 +1,22 @@
+@import './variables';
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: $border-radius;
+  background: $primary-color;
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: $border-radius;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.02);
+  color: $text-color;
+}

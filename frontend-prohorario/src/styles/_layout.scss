@@ -1,0 +1,8 @@
+@import './mixins';
+
+.container { @include container; }
+
+.header, .footer {
+  @include container;
+  padding-block: 16px;
+}
