@@ -6,52 +6,57 @@
     </header>
 
     <main>
-      <section>
-        <div>
-          <div class="profissional">
-            <p>Profissional</p>
-            <p>{{ profissional?.nome || 'Carregando...' }}</p>
+      <section class="card">
+        <div style="padding:1.25rem">
+          <div class="profissional" style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;">
+            <div>
+              <p class="meta">Profissional</p>
+              <p style="font-weight:600">{{ profissional?.nome || 'Carregando...' }}</p>
+            </div>
+
+            <div class="data-selecao" style="display:flex;align-items:center;gap:.75rem;">
+              <label for="data">Selecione a data</label>
+              <input
+                id="data"
+                type="date"
+                v-model="dia"
+                :min="hoje"
+                @change="carregar"
+                class="input"
+                style="max-width:220px"
+              />
+            </div>
           </div>
 
-          <div class="data-selecao">
-            <label for="data">Selecione a data</label>
-            <input
-              id="data"
-              type="date"
-              v-model="dia"
-              :min="hoje"
-              @change="carregar"
-              class="input"
-            />
+          <div v-if="carregando" class="carregando" style="text-align:center;padding:2.5rem 0;">
+            <span class="spinner" />
+            <p class="meta" style="margin-top:.6rem">Carregando horários…</p>
           </div>
-        </div>
 
-        <div v-if="carregando" class="carregando">
-          <p>Carregando horários…</p>
-        </div>
+          <div v-else>
+            <div class="horarios" style="margin-top:1.25rem">
+             
+              <GradeHorarios
+                :date="dia"
+                :ocupados="ocupados"
+                :selected="selecionado"
+                :disabled="enviando"
+                @select="selecionar"
+              />
+            </div>
 
-        <div v-else>
-          <div class="horarios">
-            
-            <GradeHorarios
-              :date="dia"
-              :ocupados="ocupados"
+            <FormConfirmacao
+              v-if="selecionado"
+              class="confirmacao"
               :selected="selecionado"
-              :disabled="enviando"
-              @select="selecionar"
+              :date="dia"
+              :loading="enviando"
+              :success="ok"
+              :error="erro"
+              @cancel="cancelarSelecao"
+              @submit="handleSubmit"
             />
           </div>
-
-          <FormConfirmacao
-            v-if="selecionado"
-            :selected="selecionado"
-            :date="dia"
-            :loading="enviando"
-            :success="ok"
-            :error="erro"
-            @cancel="cancelarSelecao"
-            @submit="handleSubmit"
-          />
         </div>
       </section>
     </main>
