@@ -11,7 +11,7 @@ const routes = [
   { path: '/login', name: 'Login', component: () => import('../pages/Login.vue') },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/register', name: 'Register', component: Register },
-  { path: '/:linkPersonalizado', name: 'AgendamentoPublico', component: AgendamentoPublico } 
+  { path: '/public/:linkPersonalizado', name: 'AgendamentoPublico', component: () => import('../pages/AgendamentoPublico.vue') } 
 ]
 
 const router = createRouter({
